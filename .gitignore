@@ -75,3 +75,15 @@ plan.md
 # Supabase
 supabase/.branches
 supabase/.temp
+
+# Deploy (contains secrets)
+deploy/.env
+deploy/volumes/api/kong.yml
+
+# Temp screenshots
+*.png
+*.jpg
+!public/**/*.png
+!public/**/*.jpg
+!src/**/*.png
+!src/**/*.jpg
