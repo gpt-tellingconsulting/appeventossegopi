@@ -2,6 +2,7 @@
 
 import { useState, useRef, useActionState } from 'react'
 import { createEventAction, updateEventAction } from '@/actions/events'
+import { VideoFormSection } from './VideoFormSection'
 import type { Event } from '@/types/database'
 
 interface EventFormProps {
@@ -25,6 +26,9 @@ export function EventForm({ event }: EventFormProps) {
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Video uploading state (controlled by VideoFormSection)
+  const [videoUploading, setVideoUploading] = useState(false)
 
   async function handleImageUpload(file: File) {
     setUploadError('')
@@ -274,6 +278,14 @@ export function EventForm({ event }: EventFormProps) {
         </div>
       </div>
 
+      {/* Video */}
+      <VideoFormSection
+        initialVideoUrl={event?.video_url ?? ''}
+        eventId={event?.id ?? 'draft'}
+        inputClass={inputClass}
+        onUploadingChange={setVideoUploading}
+      />
+
       {/* SEO */}
       <div className="card-elevated p-6 space-y-6">
         <h2 className="text-display-xs">SEO y Redes Sociales</h2>
@@ -311,10 +323,10 @@ export function EventForm({ event }: EventFormProps) {
       <div className="flex items-center gap-4">
         <button
           type="submit"
-          disabled={isPending || uploading}
+          disabled={isPending || uploading || videoUploading}
           className="px-6 py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300 text-white rounded-xl font-medium transition-colors"
         >
-          {isPending ? 'Guardando...' : uploading ? 'Subiendo imagen...' : isEditing ? 'Actualizar Evento' : 'Crear Evento'}
+          {isPending ? 'Guardando...' : uploading ? 'Subiendo imagen...' : videoUploading ? 'Subiendo video...' : isEditing ? 'Actualizar Evento' : 'Crear Evento'}
         </button>
       </div>
     </form>

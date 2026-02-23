@@ -60,6 +60,7 @@ export interface Event {
   country: string
   google_maps_embed_url: string | null
   venue_image_url: string | null
+  video_url: string | null
   latitude: number | null
   longitude: number | null
 
@@ -326,6 +327,7 @@ export interface CreateEventDTO {
   country?: string
   google_maps_embed_url?: string
   venue_image_url?: string
+  video_url?: string
   latitude?: number
   longitude?: number
   benefits?: EventBenefit[]

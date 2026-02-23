@@ -8,6 +8,7 @@ import { SpeakersSection } from '@/features/events/components/SpeakersSection'
 import { GallerySection } from '@/features/events/components/GallerySection'
 import { MapEmbed } from '@/features/events/components/MapEmbed'
 import { PrizesSection } from '@/features/events/components/PrizesSection'
+import { VideoSection } from '@/features/events/components/VideoSection'
 import { getActivePrizesByEvent } from '@/features/raffles/services/prizeService'
 import { siteConfig } from '@/config/siteConfig'
 
@@ -150,6 +151,9 @@ export default async function EventLandingPage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      {/* Video */}
+      {event.video_url && <VideoSection videoUrl={event.video_url} />}
 
       {/* Benefits */}
       <BenefitsSection benefits={event.benefits} />
