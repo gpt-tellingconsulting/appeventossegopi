@@ -6,7 +6,7 @@ const BRAND_COLOR = '#E6007E'
 const QR_SIZE = 600
 const LOGO_RATIO = 0.25
 
-export async function generateBrandedQR(url: string): Promise<string> {
+export async function generateBrandedQR(url: string): Promise<Buffer> {
   // 1. Generate QR buffer with magenta color and high error correction
   const qrBuffer = await QRCode.toBuffer(url, {
     width: QR_SIZE,
@@ -45,6 +45,5 @@ export async function generateBrandedQR(url: string): Promise<string> {
     .png()
     .toBuffer()
 
-  // 5. Return as data URL
-  return `data:image/png;base64,${result.toString('base64')}`
+  return result
 }

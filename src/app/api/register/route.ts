@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
       try {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
         const checkinUrl = `${siteUrl}/api/checkin?token=${qrToken}`
-        const qrDataUrl = await generateBrandedQR(checkinUrl)
+        const qrBuffer = await generateBrandedQR(checkinUrl)
 
         const eventDate = new Date(eventDetails.event_date).toLocaleDateString('es-ES', {
           weekday: 'long',
@@ -228,13 +228,18 @@ export async function POST(request: NextRequest) {
           venueName: eventDetails.venue_name ?? '',
           venueAddress: eventDetails.venue_address ?? '',
           city: eventDetails.city ?? '',
-          qrCodeDataUrl: qrDataUrl,
+          qrCodeDataUrl: 'cid:qr-code',
         })
 
         await sendEmail({
           to: registration.email,
           subject: `Confirmacion de Inscripcion - ${eventDetails.title}`,
           html: emailHtml,
+          attachments: [{
+            filename: 'qr-invitacion.png',
+            content: qrBuffer,
+            cid: 'qr-code',
+          }],
         })
       } catch (emailError) {
         console.error('Failed to send confirmation email:', emailError)

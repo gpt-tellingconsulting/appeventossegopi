@@ -30,6 +30,12 @@ export async function sendEmail(options: {
   subject: string
   html: string
   replyTo?: string
+  attachments?: Array<{
+    filename: string
+    content: Buffer
+    cid: string
+    contentType?: string
+  }>
 }): Promise<void> {
   const transporter = getTransporter()
 
@@ -39,5 +45,12 @@ export async function sendEmail(options: {
     replyTo: options.replyTo || EMAIL_CONFIG.replyTo,
     subject: options.subject,
     html: options.html,
+    attachments: options.attachments?.map((a) => ({
+      filename: a.filename,
+      content: a.content,
+      cid: a.cid,
+      contentType: a.contentType || 'image/png',
+      contentDisposition: 'inline' as const,
+    })),
   })
 }

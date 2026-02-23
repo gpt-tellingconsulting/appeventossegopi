@@ -89,7 +89,7 @@ export function registrationConfirmationEmail(data: EventEmailData): string {
     ? `
     <div style="text-align:center;margin:24px 0;padding:24px;background:#f0fdf4;border-radius:12px;border:2px dashed #22c55e;">
       <p style="color:#15803d;font-weight:700;font-size:14px;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">Tu Invitaci&oacute;n Personal</p>
-      <img src="${data.qrCodeDataUrl}" alt="QR de Invitaci&oacute;n" width="200" height="200" style="display:block;margin:0 auto;border-radius:8px;" />
+      <img src="cid:qr-code" alt="QR de Invitaci&oacute;n" width="200" height="200" style="display:block;margin:0 auto;border-radius:8px;" />
       <p style="color:#4b5563;font-size:12px;margin:12px 0 0;">Presenta este c&oacute;digo QR a la entrada del evento</p>
     </div>`
     : ''

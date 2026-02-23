@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
   // Generate a sample QR code
   const sampleQrUrl = `${siteUrl}/api/checkin?token=test-sample-token`
-  const qrDataUrl = await generateBrandedQR(sampleQrUrl)
+  const qrBuffer = await generateBrandedQR(sampleQrUrl)
 
   for (const email of recipients) {
     const result: { email: string; confirmation: string; thankYou: string } = {
@@ -75,13 +75,18 @@ export async function POST(request: NextRequest) {
         venueName: eventData.venue_name,
         venueAddress: eventData.venue_address,
         city: eventData.city,
-        qrCodeDataUrl: qrDataUrl,
+        qrCodeDataUrl: 'cid:qr-code',
       })
 
       await sendEmail({
         to: email,
         subject: `[TEST] Confirmacion de Inscripcion - ${eventData.title}`,
         html: confirmationHtml,
+        attachments: [{
+          filename: 'qr-invitacion.png',
+          content: qrBuffer,
+          cid: 'qr-code',
+        }],
       })
       result.confirmation = 'sent'
     } catch (err) {
