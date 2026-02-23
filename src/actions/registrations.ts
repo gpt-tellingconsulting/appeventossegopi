@@ -1,7 +1,8 @@
 'use server'
 
+import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { updateRegistration } from '@/features/registrations/services/registrationService'
 import type { AttendanceStatus, LeadStatus } from '@/types/database'
 
@@ -78,4 +79,37 @@ export async function updateLeadStatusAction(
     const message = err instanceof Error ? err.message : 'Error al actualizar lead status'
     return { error: message }
   }
+}
+
+export async function deleteRegistrationAction(registrationId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return { error: 'No autorizado' }
+
+  try {
+    // Use service client to bypass RLS (no DELETE policy exists)
+    const serviceClient = createServiceClient()
+
+    // Delete raffle_entries first (no CASCADE)
+    await serviceClient
+      .from('raffle_entries')
+      .delete()
+      .eq('registration_id', registrationId)
+
+    // Delete registration (consents cascade automatically)
+    const { error } = await serviceClient
+      .from('registrations')
+      .delete()
+      .eq('id', registrationId)
+
+    if (error) return { error: error.message }
+
+    revalidatePath('/registrations')
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Error al eliminar inscripcion'
+    return { error: message }
+  }
+
+  redirect('/registrations')
 }

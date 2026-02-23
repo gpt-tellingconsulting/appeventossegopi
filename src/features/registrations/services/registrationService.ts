@@ -60,6 +60,7 @@ export async function getAllRegistrations(
   const {
     search,
     attendance_status,
+    eventId,
     page = 1,
     pageSize = 25,
   } = filters
@@ -72,6 +73,10 @@ export async function getAllRegistrations(
     .select('*, event:events(id, title, event_date)', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(from, to)
+
+  if (eventId) {
+    query = query.eq('event_id', eventId)
+  }
 
   if (search) {
     query = query.or(

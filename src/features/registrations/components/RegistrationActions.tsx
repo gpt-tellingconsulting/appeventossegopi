@@ -6,6 +6,7 @@ import {
   updateNotesAction,
   updateTagsAction,
   updateLeadStatusAction,
+  deleteRegistrationAction,
 } from '@/actions/registrations'
 import type { AttendanceStatus, LeadStatus } from '@/types/database'
 
@@ -263,5 +264,88 @@ export function TagsForm({ registrationId, initialTags }: TagsFormProps) {
         </p>
       )}
     </div>
+  )
+}
+
+// Delete registration with confirmation modal
+
+interface DeleteRegistrationButtonProps {
+  registrationId: string
+  attendeeName: string
+}
+
+export function DeleteRegistrationButton({ registrationId, attendeeName }: DeleteRegistrationButtonProps) {
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
+
+  function handleDelete() {
+    setError(null)
+    startTransition(async () => {
+      const result = await deleteRegistrationAction(registrationId)
+      if (result?.error) {
+        setError(result.error)
+        setShowConfirm(false)
+      }
+    })
+  }
+
+  return (
+    <>
+      <button
+        onClick={() => setShowConfirm(true)}
+        className="flex items-center justify-center gap-2 w-full px-4 py-3 border border-error-200 rounded-xl text-sm font-medium text-error-600 hover:bg-error-50 hover:border-error-300 transition-colors"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        Eliminar inscripcion
+      </button>
+
+      {error && (
+        <p className="text-xs text-error-600 mt-2 text-center">{error}</p>
+      )}
+
+      {/* Confirmation modal */}
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-error-100 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-error-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Eliminar inscripcion</h3>
+                <p className="text-sm text-foreground-secondary">Esta accion no se puede deshacer</p>
+              </div>
+            </div>
+            <p className="text-sm text-foreground-secondary mb-6">
+              Se eliminara la inscripcion de <strong>{attendeeName}</strong> junto
+              con todos sus consentimientos y datos asociados.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowConfirm(false)}
+                disabled={isPending}
+                className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-background transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isPending}
+                className="px-4 py-2 rounded-xl bg-error-600 hover:bg-error-700 disabled:opacity-60 text-white text-sm font-medium transition-colors"
+              >
+                {isPending ? 'Eliminando...' : 'Eliminar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

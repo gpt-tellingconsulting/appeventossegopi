@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { getAllRegistrations } from '@/features/registrations/services/registrationService'
+import { getAllEvents } from '@/features/events/services/eventService'
+import { EventFilterSelect } from '@/features/registrations/components/EventFilterSelect'
 
 interface PageProps {
-  searchParams: Promise<{ status?: string; search?: string; page?: string }>
+  searchParams: Promise<{ status?: string; search?: string; page?: string; eventId?: string }>
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -22,15 +24,26 @@ const STATUS_BADGE: Record<string, string> = {
   cancelled: 'badge-cancelled',
 }
 
-export default async function RegistrationsPage({ searchParams }: PageProps) {
-  const { status = 'all', search = '', page = '1' } = await searchParams
+function buildUrl(params: Record<string, string>) {
+  const filtered = Object.entries(params).filter(([, v]) => v && v !== 'all' && v !== '')
+  return `/registrations${filtered.length ? '?' + new URLSearchParams(filtered).toString() : ''}`
+}
 
-  const { data: registrations, total, totalPages, page: currentPage } = await getAllRegistrations({
-    attendance_status: status,
-    search,
-    page: Number(page),
-    pageSize: 30,
-  })
+export default async function RegistrationsPage({ searchParams }: PageProps) {
+  const { status = 'all', search = '', page = '1', eventId = '' } = await searchParams
+
+  const [registrationsResult, events] = await Promise.all([
+    getAllRegistrations({
+      attendance_status: status,
+      search,
+      eventId: eventId || undefined,
+      page: Number(page),
+      pageSize: 30,
+    }),
+    getAllEvents(),
+  ])
+
+  const { data: registrations, total, totalPages, page: currentPage } = registrationsResult
 
   return (
     <div className="p-4 sm:p-8">
@@ -55,27 +68,37 @@ export default async function RegistrationsPage({ searchParams }: PageProps) {
       </div>
 
       {/* Filter Bar */}
-      <div className="card-elevated p-4 mb-6 flex flex-col sm:flex-row gap-3">
-        <form className="flex-1 flex gap-3" method="GET">
-          <input
-            type="text"
-            name="search"
-            defaultValue={search}
-            placeholder="Buscar por nombre, email..."
-            className="flex-1 px-4 py-2 rounded-xl border border-border bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm transition-all"
+      <div className="card-elevated p-4 mb-6 flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <form className="flex-1 flex gap-3" method="GET">
+            {eventId && <input type="hidden" name="eventId" value={eventId} />}
+            {status !== 'all' && <input type="hidden" name="status" value={status} />}
+            <input
+              type="text"
+              name="search"
+              defaultValue={search}
+              placeholder="Buscar por nombre, email..."
+              className="flex-1 px-4 py-2 rounded-xl border border-border bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm transition-all"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-primary-500 text-white rounded-xl text-sm font-medium hover:bg-primary-600 transition-colors"
+            >
+              Buscar
+            </button>
+          </form>
+          {/* Event filter dropdown */}
+          <EventFilterSelect
+            events={events.map((e) => ({ id: e.id, title: e.title }))}
+            currentEventId={eventId}
+            baseParams={{ status, search }}
           />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-primary-500 text-white rounded-xl text-sm font-medium hover:bg-primary-600 transition-colors"
-          >
-            Buscar
-          </button>
-        </form>
+        </div>
         <div className="flex gap-2 flex-wrap">
           {Object.entries(STATUS_LABELS).map(([key, label]) => (
             <Link
               key={key}
-              href={`/registrations?status=${key}${search ? `&search=${search}` : ''}`}
+              href={buildUrl({ status: key, search, eventId })}
               className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                 status === key
                   ? 'bg-primary-500 text-white'
@@ -164,7 +187,7 @@ export default async function RegistrationsPage({ searchParams }: PageProps) {
             <div className="flex gap-2">
               {currentPage > 1 && (
                 <Link
-                  href={`/registrations?status=${status}&search=${search}&page=${currentPage - 1}`}
+                  href={buildUrl({ status, search, eventId, page: String(currentPage - 1) })}
                   className="px-3 py-1.5 rounded-lg border border-border text-sm hover:border-primary-200 transition-colors"
                 >
                   Anterior
@@ -172,7 +195,7 @@ export default async function RegistrationsPage({ searchParams }: PageProps) {
               )}
               {currentPage < totalPages && (
                 <Link
-                  href={`/registrations?status=${status}&search=${search}&page=${currentPage + 1}`}
+                  href={buildUrl({ status, search, eventId, page: String(currentPage + 1) })}
                   className="px-3 py-1.5 rounded-lg border border-border text-sm hover:border-primary-200 transition-colors"
                 >
                   Siguiente

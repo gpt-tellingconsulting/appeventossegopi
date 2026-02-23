@@ -6,6 +6,7 @@ import {
   LeadStatusForm,
   NotesForm,
   TagsForm,
+  DeleteRegistrationButton,
 } from '@/features/registrations/components/RegistrationActions'
 
 interface PageProps {
@@ -28,7 +29,7 @@ export default async function RegistrationDetailPage({ params }: PageProps) {
   const eventId = registration.event?.id
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="p-4 sm:p-8 max-w-4xl">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-foreground-secondary mb-6">
         <Link href="/registrations" className="hover:text-primary-600">Inscripciones</Link>
@@ -218,6 +219,12 @@ export default async function RegistrationDetailPage({ params }: PageProps) {
             </svg>
             Exportar evento CSV
           </a>
+
+          {/* Delete */}
+          <DeleteRegistrationButton
+            registrationId={registration.id}
+            attendeeName={fullName}
+          />
         </div>
       </div>
 

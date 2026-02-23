@@ -13,6 +13,7 @@ export interface RegistrationFilters {
   search?: string
   attendance_status?: string
   lead_status?: string
+  eventId?: string
   dateFrom?: string
   dateTo?: string
   page?: number
