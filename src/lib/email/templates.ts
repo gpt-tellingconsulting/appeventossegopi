@@ -72,14 +72,26 @@ function htmlWrap(title: string, headerSub: string, body: string, unsubscribeUrl
 }
 
 function eventDetailsCard(data: EventEmailData): string {
+  const rows = [
+    ['Evento', data.eventTitle],
+    ['Fecha', data.eventDate],
+    ['Hora', data.eventTime],
+    ['Lugar', data.venueName],
+    ['Direcci&oacute;n', `${data.venueAddress}, ${data.city}`],
+  ]
+  const rowsHtml = rows.map(([label, value]) => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #ede9fe;color:#6b7280;font-size:13px;white-space:nowrap;vertical-align:top;">${label}:</td>
+      <td style="padding:8px 0 8px 12px;border-bottom:1px solid #ede9fe;color:#111827;font-weight:600;font-size:13px;vertical-align:top;">${value}</td>
+    </tr>
+  `).join('')
+
   return `
-    <div class="card">
-      <h3>Detalles del Evento</h3>
-      <div class="row"><span class="label">Evento</span><span class="value">${data.eventTitle}</span></div>
-      <div class="row"><span class="label">Fecha</span><span class="value">${data.eventDate}</span></div>
-      <div class="row"><span class="label">Hora</span><span class="value">${data.eventTime}</span></div>
-      <div class="row"><span class="label">Lugar</span><span class="value">${data.venueName}</span></div>
-      <div class="row"><span class="label">Direcci&oacute;n</span><span class="value">${data.venueAddress}, ${data.city}</span></div>
+    <div style="background:#f5f3ff;border-radius:12px;padding:24px;margin-bottom:24px;border-left:4px solid #4F46E5;">
+      <h3 style="color:#4F46E5;margin:0 0 14px;font-size:13px;text-transform:uppercase;letter-spacing:0.8px;">Detalles del Evento</h3>
+      <table style="width:100%;border-collapse:collapse;">
+        ${rowsHtml}
+      </table>
     </div>
   `
 }
