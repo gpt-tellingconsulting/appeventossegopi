@@ -21,9 +21,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # NEXT_PUBLIC_* variables must be available at build time
 # (they get inlined into the client-side JavaScript bundle)
-ARG NEXT_PUBLIC_SUPABASE_URL=https://miymyomckhazcrdvgfqa.supabase.co
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_uhmBGmo4mbl7_D83mvm2uw__iPIl10x
-ARG NEXT_PUBLIC_SITE_URL=https://appeventossegopi.wellgoo.es
+ARG NEXT_PUBLIC_SUPABASE_URL=https://supabase-api.segopi.es
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzM1Njg5NjAwLCJleHAiOjIyMDg5ODg4MDB9.Z0B_2lWxfKcUrIWQi1VP4iPH3-0Tud5pJx6h6txIg1Q
+ARG NEXT_PUBLIC_SITE_URL=https://eventos.segopi.es
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
