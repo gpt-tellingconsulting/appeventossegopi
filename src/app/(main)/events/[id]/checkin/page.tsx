@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, use } from 'react'
 import Link from 'next/link'
+import { BarcodeDetector as BarcodeDetectorPolyfill } from 'barcode-detector'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -26,15 +27,14 @@ interface CheckinResultData {
 type ScanState = 'idle' | 'scanning' | 'processing' | 'result'
 
 // ---------------------------------------------------------------------------
-// BarcodeDetector global type shim
+// BarcodeDetector: use native if available, otherwise polyfill
 // ---------------------------------------------------------------------------
 
-declare global {
-  interface Window {
-    BarcodeDetector?: new (options: { formats: string[] }) => {
-      detect: (source: HTMLVideoElement | HTMLCanvasElement) => Promise<Array<{ rawValue: string }>>
-    }
+const getBarcodeDetector = (): typeof BarcodeDetectorPolyfill => {
+  if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
+    return window.BarcodeDetector as unknown as typeof BarcodeDetectorPolyfill
   }
+  return BarcodeDetectorPolyfill
 }
 
 // ---------------------------------------------------------------------------
@@ -296,7 +296,8 @@ export default function CheckinPage({ params }: PageProps) {
   // -------------------------------------------------------------------------
 
   useEffect(() => {
-    setBarcodeSupported(typeof window !== 'undefined' && 'BarcodeDetector' in window)
+    // Always supported now thanks to the polyfill
+    setBarcodeSupported(true)
   }, [])
 
   // -------------------------------------------------------------------------
@@ -374,7 +375,8 @@ export default function CheckinPage({ params }: PageProps) {
   const startScanLoop = useCallback(() => {
     if (!barcodeSupported || !videoRef.current || !canvasRef.current) return
 
-    const detector = new window.BarcodeDetector!({ formats: ['qr_code'] })
+    const Detector = getBarcodeDetector()
+    const detector = new Detector({ formats: ['qr_code'] })
     const video = videoRef.current
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
