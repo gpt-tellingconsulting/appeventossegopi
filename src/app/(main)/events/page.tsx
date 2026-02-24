@@ -78,6 +78,12 @@ export default async function EventsPage() {
                       >
                         Inscripciones
                       </Link>
+                      <Link
+                        href={`/events/${event.id}/checkin`}
+                        className="text-sm text-accent-500 hover:text-accent-700 font-medium hidden sm:inline"
+                      >
+                        Check-in
+                      </Link>
                     </div>
                   </td>
                 </tr>

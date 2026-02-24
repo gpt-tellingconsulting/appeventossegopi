@@ -125,7 +125,7 @@ async function EventsSection() {
           <SectionHeading
             label="Próximos eventos"
             title="Agenda de Eventos"
-            subtitle="Jornadas, congresos y formación para profesionales de la seguridad privada."
+            subtitle="Ferias y eventos para profesionales del Grupo Segopi."
           />
           <div className="mt-12 text-center py-16 bg-error-50 rounded-2xl border border-error-100">
             <p className="text-body-md text-error-600">
@@ -145,7 +145,7 @@ async function EventsSection() {
         <SectionHeading
           label="Próximos eventos"
           title="Agenda de Eventos"
-          subtitle="Jornadas, congresos y formación para profesionales de la seguridad privada."
+          subtitle="Ferias y eventos para profesionales del Grupo Segopi."
         />
 
         {typedEvents.length === 0 ? (
