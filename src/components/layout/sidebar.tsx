@@ -6,6 +6,9 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
+import { DeployModal } from './deploy-modal'
+
+const isDev = process.env.NEXT_PUBLIC_SITE_URL?.includes('localhost') ?? false
 
 interface NavItem {
   href: string
@@ -26,6 +29,7 @@ export function Sidebar() {
   const router = useRouter()
   const { user, profile, loading } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
+  const [showDeploy, setShowDeploy] = useState(false)
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -152,6 +156,15 @@ export function Sidebar() {
               </div>
             </div>
           )}
+          {isDev && (
+            <button
+              onClick={() => setShowDeploy(true)}
+              className="nav-item w-full text-left"
+            >
+              <RocketIcon className="w-5 h-5 flex-shrink-0" />
+              <span>Deploy</span>
+            </button>
+          )}
           <button
             onClick={handleLogout}
             className="nav-item w-full text-left"
@@ -161,6 +174,10 @@ export function Sidebar() {
           </button>
         </div>
       </aside>
+
+      {isDev && (
+        <DeployModal isOpen={showDeploy} onClose={() => setShowDeploy(false)} />
+      )}
     </>
   )
 }
@@ -207,6 +224,15 @@ function ChartBarIcon({ className }: { className?: string }) {
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round"
         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    </svg>
+  )
+}
+
+function RocketIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.841m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
     </svg>
   )
 }

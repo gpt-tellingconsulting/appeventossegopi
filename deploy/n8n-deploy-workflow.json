@@ -1,0 +1,307 @@
+{
+  "name": "Deploy Eventos SEGOPI",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Deploy Manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "deploy-eventos",
+        "responseMode": "onReceived",
+        "responseCode": 200,
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "GitHub Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        560
+      ],
+      "webhookId": "deploy-eventos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-branch-main",
+              "leftValue": "={{ $json.body.ref }}",
+              "rightValue": "refs/heads/main",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Es branch main?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        460,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://portainer.segopi.es/api/endpoints/3/docker/build",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "ptr_degYCDynXoIEzgg5fzH0gzPDjBg1wxtTuZAqxoEFm48="
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "remote",
+              "value": "https://github.com/gpt-tellingconsulting/appeventossegopi.git#main"
+            },
+            {
+              "name": "t",
+              "value": "eventos-app:latest"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 600000,
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "name": "1. Build Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        440
+      ],
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://portainer.segopi.es/api/webhooks/f90bc4f6-1653-44cb-9e54-84455873180b",
+        "options": {
+          "timeout": 30000,
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "a1b2c3d4-0005-4000-8000-000000000005",
+      "name": "2. Force Update Service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "timeInterval",
+        "interval": 30,
+        "unit": "seconds"
+      },
+      "id": "a1b2c3d4-0006-4000-8000-000000000006",
+      "name": "3. Esperar 30s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://portainer.segopi.es/api/endpoints/3/docker/images/prune",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "ptr_degYCDynXoIEzgg5fzH0gzPDjBg1wxtTuZAqxoEFm48="
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filters",
+              "value": "{\"dangling\":[\"true\"]}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "a1b2c3d4-0007-4000-8000-000000000007",
+      "name": "4. Prune Images",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://eventos.segopi.es",
+        "options": {
+          "timeout": 15000,
+          "allowUnauthorizedCerts": true,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "a1b2c3d4-0008-4000-8000-000000000008",
+      "name": "5. Verificar Site",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        440
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Deploy Eventos SEGOPI\n\n### GitHub Webhook (configurar una sola vez):\n- Repo > Settings > Webhooks > Add webhook\n- URL: `https://n8n.segopi.es/webhook/deploy-eventos`\n- Content type: `application/json`\n- Events: Just the push event\n\n### Flujo:\nPush a main → Build imagen → Force update → Esperar 30s → Prune imagenes → Verificar site",
+        "width": 420,
+        "height": 480
+      },
+      "id": "a1b2c3d4-0009-4000-8000-000000000009",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Deploy Manual": {
+      "main": [
+        [
+          {
+            "node": "1. Build Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub Webhook": {
+      "main": [
+        [
+          {
+            "node": "Es branch main?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es branch main?": {
+      "main": [
+        [
+          {
+            "node": "1. Build Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Build Image": {
+      "main": [
+        [
+          {
+            "node": "2. Force Update Service",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Force Update Service": {
+      "main": [
+        [
+          {
+            "node": "3. Esperar 30s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Esperar 30s": {
+      "main": [
+        [
+          {
+            "node": "4. Prune Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Prune Images": {
+      "main": [
+        [
+          {
+            "node": "5. Verificar Site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0
+}
+gpt

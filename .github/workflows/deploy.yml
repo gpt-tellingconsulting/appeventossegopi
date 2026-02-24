@@ -1,0 +1,66 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Build Docker image via Portainer API
+        run: |
+          echo "Building eventos-app:latest from GitHub repo..."
+          HTTP_CODE=$(curl -s -o build_output.txt -w "%{http_code}" \
+            --max-time 600 \
+            -X POST \
+            -H "X-API-Key: ${{ secrets.PORTAINER_API_KEY }}" \
+            "https://portainer.segopi.es/api/endpoints/3/docker/build?remote=https%3A%2F%2Fgithub.com%2Fgpt-tellingconsulting%2Fappeventossegopi.git%23main&t=eventos-app%3Alatest&nocache=0")
+          echo "Build response code: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Build failed!"
+            cat build_output.txt
+            exit 1
+          fi
+          echo "Build completed successfully"
+
+      - name: Force update service via webhook
+        run: |
+          echo "Triggering service force update..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 30 \
+            -X POST \
+            "${{ secrets.PORTAINER_WEBHOOK_URL }}")
+          echo "Webhook response code: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "204" ] && [ "$HTTP_CODE" != "200" ]; then
+            echo "Webhook failed with code $HTTP_CODE"
+            exit 1
+          fi
+          echo "Service update triggered"
+
+      - name: Wait for service to start
+        run: |
+          echo "Waiting 30s for new container to start..."
+          sleep 30
+
+      - name: Prune unused Docker images
+        run: |
+          echo "Pruning dangling images..."
+          curl -s -X POST \
+            -H "X-API-Key: ${{ secrets.PORTAINER_API_KEY }}" \
+            "https://portainer.segopi.es/api/endpoints/3/docker/images/prune?filters=%7B%22dangling%22%3A%5B%22true%22%5D%7D"
+          echo ""
+          echo "Prune completed"
+
+      - name: Verify deployment
+        run: |
+          echo "Checking if site is reachable..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "https://eventos.segopi.es")
+          echo "Site response code: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "WARNING: Site returned $HTTP_CODE (may still be starting)"
+          else
+            echo "Deployment verified - site is live!"
+          fi
