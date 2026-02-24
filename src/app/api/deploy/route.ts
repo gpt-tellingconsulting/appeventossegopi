@@ -65,12 +65,23 @@ export async function POST(request: NextRequest) {
     const safeMessage = message.trim().replace(/"/g, '\\"')
     execSync(`git commit -m "${safeMessage}"`, opts)
 
-    // Stage 3: git push
-    execSync('git push', { ...opts, timeout: 60000 })
+    // Stage 3: git push to deploy remote
+    execSync('git push gpt-telling main', { ...opts, timeout: 60000 })
+
+    // Stage 4: trigger N8N deploy webhook directly (GitHub webhook has DNS issues)
+    try {
+      await fetch('https://n8n.segopi.es/webhook/deploy-eventos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ref: 'refs/heads/main' }),
+      })
+    } catch {
+      // Non-blocking: deploy continues even if N8N trigger fails
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Deploy iniciado. El webhook de GitHub disparara el build automaticamente.',
+      message: 'Commit + push completado. Pipeline de deploy disparado.',
     })
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : 'Error desconocido'
