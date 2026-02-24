@@ -13,8 +13,8 @@ import type { AttendanceStatus, LeadStatus } from '@/types/database'
 const ATTENDANCE_OPTIONS: { value: AttendanceStatus; label: string }[] = [
   { value: 'registered', label: 'Registrado' },
   { value: 'confirmed', label: 'Confirmado' },
-  { value: 'attended', label: 'Asistio' },
-  { value: 'no_show', label: 'No asistio' },
+  { value: 'attended', label: 'Acudió' },
+  { value: 'no_show', label: 'NO Acudió' },
   { value: 'cancelled', label: 'Cancelado' },
 ]
 

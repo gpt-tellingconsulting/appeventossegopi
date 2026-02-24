@@ -10,8 +10,8 @@ interface PageProps {
 const attendanceBadge: Record<AttendanceStatus, { label: string; className: string }> = {
   registered: { label: 'Registrado', className: 'badge-registered' },
   confirmed: { label: 'Confirmado', className: 'badge-confirmed' },
-  attended: { label: 'Asistio', className: 'badge-attended' },
-  no_show: { label: 'No asistio', className: 'badge-no-show' },
+  attended: { label: 'Acudió', className: 'badge-attended' },
+  no_show: { label: 'NO Acudió', className: 'badge-no-show' },
   cancelled: { label: 'Cancelado', className: 'badge-cancelled' },
 }
 
@@ -85,10 +85,10 @@ export default async function EventAnalyticsPage({ params }: PageProps) {
           <h2 className="heading text-base mb-5">Desglose de Asistencia</h2>
           <div className="space-y-4">
             {([
-              { label: 'Asistio', value: attended, color: 'bg-green-500' },
+              { label: 'Acudió', value: attended, color: 'bg-green-500' },
               { label: 'Confirmado', value: confirmed, color: 'bg-purple-500' },
               { label: 'Registrado', value: totalRegistrations - confirmed - attended - noShow - cancelled, color: 'bg-blue-500' },
-              { label: 'No asistio', value: noShow, color: 'bg-yellow-500' },
+              { label: 'NO Acudió', value: noShow, color: 'bg-yellow-500' },
               { label: 'Cancelado', value: cancelled, color: 'bg-red-400' },
             ] as { label: string; value: number; color: string }[]).map(({ label, value, color }) => (
               <div key={label}>

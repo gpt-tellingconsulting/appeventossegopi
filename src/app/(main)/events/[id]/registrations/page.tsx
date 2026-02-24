@@ -15,8 +15,8 @@ const STATUS_LABELS: Record<string, string> = {
   all: 'Todos',
   registered: 'Registrado',
   confirmed: 'Confirmado',
-  attended: 'Asistio',
-  no_show: 'No asistio',
+  attended: 'Acudió',
+  no_show: 'NO Acudió',
   cancelled: 'Cancelado',
 }
 
