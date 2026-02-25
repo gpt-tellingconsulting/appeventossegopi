@@ -220,6 +220,13 @@ export function RegistrationForm({ event }: RegistrationFormProps) {
             <span className="text-foreground-muted"> (opcional)</span>
           </span>
         </label>
+
+        {/* Aviso de aforo y limite de asistentes */}
+        <p className="text-xs text-foreground-muted leading-relaxed mt-2">
+          Por motivos de aforo, la empresa se reserva el derecho de admisión hasta completar el número máximo de participantes permitidos en el evento.
+          Asimismo, por razones operativas, se establece un límite máximo de dos (2) asistentes por empresa. En caso de requerir invitaciones adicionales, estas deberán solicitarse a través del correo electrónico{' '}
+          <a href="mailto:eventos@segopi.es" className="text-primary-500 underline">eventos@segopi.es</a>, quedando sujetas a valoración y posible aprobación por parte de la organización.
+        </p>
       </div>
 
       {/* TODO: Cloudflare Turnstile widget here */}

@@ -116,6 +116,11 @@ export function registrationConfirmationEmail(data: EventEmailData): string {
     <p class="message" style="font-size:13px;color:#6b7280;">
       Si tienes alguna pregunta, resp&oacute;ndenos a este correo.
     </p>
+    <div style="margin-top:24px;padding:16px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;">
+      <p style="color:#9ca3af;font-size:11px;line-height:1.6;margin:0;">
+        <strong style="color:#6b7280;">Observaci&oacute;n:</strong> Por motivos de aforo, la empresa se reserva el derecho de admisi&oacute;n hasta completar el n&uacute;mero m&aacute;ximo de participantes permitidos en el evento. Asimismo, por razones operativas, se establece un l&iacute;mite m&aacute;ximo de dos (2) asistentes por empresa. En caso de requerir invitaciones adicionales, estas deber&aacute;n solicitarse a trav&eacute;s del correo electr&oacute;nico <a href="mailto:eventos@segopi.es" style="color:#4F46E5;">eventos@segopi.es</a>, quedando sujetas a valoraci&oacute;n y posible aprobaci&oacute;n por parte de la organizaci&oacute;n.
+      </p>
+    </div>
   `
   return htmlWrap(
     `Inscripcion Confirmada - ${data.eventTitle}`,
