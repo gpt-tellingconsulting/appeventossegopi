@@ -8,7 +8,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'miymyomckhazcrdvgfqa.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'supabase-api.segopi.es',
+      },
     ],
+    dangerouslyAllowLocalIP: true,
   },
 }
 

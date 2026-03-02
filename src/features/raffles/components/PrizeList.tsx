@@ -177,6 +177,7 @@ function PrizeForm({ prize, eventId, isPending, onSubmit, onCancel }: PrizeFormP
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const imageUrlRef = useRef<HTMLInputElement>(null)
+  const fileInputId = `prize-image-${prize?.id ?? 'new'}`
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -298,13 +299,12 @@ function PrizeForm({ prize, eventId, isPending, onSubmit, onCancel }: PrizeFormP
               />
             </div>
             <div className="flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+              <label
+                htmlFor={fileInputId}
+                className="text-xs text-primary-600 hover:text-primary-700 font-medium cursor-pointer"
               >
                 Cambiar imagen
-              </button>
+              </label>
               <button
                 type="button"
                 onClick={handleRemoveImage}
@@ -315,19 +315,19 @@ function PrizeForm({ prize, eventId, isPending, onSubmit, onCancel }: PrizeFormP
             </div>
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full py-6 border-2 border-dashed border-gray-300 rounded-xl text-sm text-foreground-secondary hover:border-primary-400 hover:text-primary-600 transition-colors flex flex-col items-center gap-1"
+          <label
+            htmlFor={fileInputId}
+            className="w-full py-6 border-2 border-dashed border-gray-300 rounded-xl text-sm text-foreground-secondary hover:border-primary-400 hover:text-primary-600 transition-colors flex flex-col items-center gap-1 cursor-pointer"
           >
             <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
             </svg>
             Seleccionar imagen (JPG, PNG, WebP - Max 5MB)
-          </button>
+          </label>
         )}
 
         <input
+          id={fileInputId}
           ref={fileInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
