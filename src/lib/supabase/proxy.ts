@@ -35,11 +35,11 @@ export async function updateSession(request: NextRequest) {
 
   // Rutas protegidas
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard')
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') ||
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/admin') ||
                       request.nextUrl.pathname.startsWith('/signup')
 
   if (isProtectedRoute && !user) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL('/admin', request.url))
   }
 
   if (isAuthRoute && user) {

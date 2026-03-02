@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
       <ForgotPasswordForm />
 
       <Link
-        href="/login"
+        href="/admin"
         className="flex items-center justify-center gap-2 text-sm font-medium text-foreground-secondary hover:text-foreground"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

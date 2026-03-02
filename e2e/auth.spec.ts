@@ -4,7 +4,7 @@ test.describe('Auth Pages - Sin autenticacion', () => {
   test.setTimeout(60000)
 
   test('login page carga correctamente', async ({ page }) => {
-    await page.goto('/login', { timeout: 45000 })
+    await page.goto('/admin', { timeout: 45000 })
 
     await expect(page.getByText('Bienvenido de vuelta')).toBeVisible()
     await expect(page.getByText('Inicia sesión en tu cuenta para continuar')).toBeVisible()
@@ -36,7 +36,7 @@ test.describe('Auth Pages - Sin autenticacion', () => {
   })
 
   test('navegacion login -> signup funciona', async ({ page }) => {
-    await page.goto('/login')
+    await page.goto('/admin')
     await page.waitForLoadState('networkidle')
     await page.getByRole('link', { name: 'Regístrate' }).click()
     await page.waitForURL('**/signup', { timeout: 15000 })
@@ -46,12 +46,12 @@ test.describe('Auth Pages - Sin autenticacion', () => {
   test('navegacion signup -> login funciona', async ({ page }) => {
     await page.goto('/signup')
     await page.getByRole('link', { name: 'Inicia sesión' }).click()
-    await page.waitForURL('**/login', { timeout: 15000 })
-    await expect(page).toHaveURL(/login/)
+    await page.waitForURL('**/admin', { timeout: 15000 })
+    await expect(page).toHaveURL(/admin/)
   })
 
   test('login con credenciales invalidas muestra error', async ({ page }) => {
-    await page.goto('/login')
+    await page.goto('/admin')
 
     await page.locator('#email').fill('invalid@test.com')
     await page.locator('#password').fill('wrongpassword')
@@ -62,7 +62,7 @@ test.describe('Auth Pages - Sin autenticacion', () => {
   })
 
   test('login con credenciales validas redirige a dashboard', async ({ page }) => {
-    await page.goto('/login')
+    await page.goto('/admin')
 
     await page.locator('#email').fill('juan.perez@lexagenda.com')
     await page.locator('#password').fill('password123')
@@ -79,7 +79,7 @@ test.describe('Auth Pages - Sin autenticacion', () => {
   })
 
   test('branding LexAgenda visible en auth layout', async ({ page }) => {
-    await page.goto('/login')
+    await page.goto('/admin')
     await expect(page.getByText('Gestiona tus citas legales con profesionalismo')).toBeVisible()
   })
 })

@@ -65,12 +65,6 @@ export function Navbar() {
                   </Link>
                 )
               })}
-              <Link
-                href="/login"
-                className="ml-3 px-4 py-2 bg-accent-500 hover:bg-accent-600 text-white text-body-sm font-semibold rounded-lg transition-colors shadow-sm"
-              >
-                Acceso Admin
-              </Link>
             </div>
 
             {/* Mobile hamburger */}
@@ -132,16 +126,8 @@ export function Navbar() {
               })}
             </nav>
 
-            {/* CTA */}
-            <div className="px-4 pb-6 pt-2 border-t border-border-light">
-              <Link
-                href="/login"
-                className="block w-full text-center bg-accent-500 hover:bg-accent-600 text-white font-semibold py-3 rounded-xl transition-colors"
-                onClick={() => setMobileOpen(false)}
-              >
-                Acceso Admin
-              </Link>
-            </div>
+            {/* Spacer */}
+            <div className="pb-6" />
           </div>
         </div>
       )}

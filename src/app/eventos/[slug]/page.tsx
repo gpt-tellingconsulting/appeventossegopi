@@ -174,7 +174,7 @@ export default async function EventLandingPage({ params }: PageProps) {
       />
 
       {/* Prizes / Sorteos */}
-      <PrizesSection prizes={prizes} />
+      <PrizesSection prizes={prizes} raffleConditions={event.raffle_conditions} />
 
       {/* CTA final */}
       {isRegistrationOpen && (

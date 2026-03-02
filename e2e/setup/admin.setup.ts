@@ -6,7 +6,7 @@ const LAWYER_PASSWORD = 'password123'
 setup.setTimeout(60000)
 
 setup('authenticate as lawyer', async ({ page }) => {
-  await page.goto('/login', { timeout: 45000 })
+  await page.goto('/admin', { timeout: 45000 })
 
   await page.locator('#email').fill(LAWYER_EMAIL)
   await page.locator('#password').fill(LAWYER_PASSWORD)

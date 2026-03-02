@@ -20,7 +20,7 @@ export async function createEventAction(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/admin')
   }
 
   const title = formData.get('title') as string
@@ -61,7 +61,7 @@ export async function updateEventAction(id: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/admin')
   }
 
   const slug = formData.get('slug') as string
@@ -102,7 +102,7 @@ export async function publishEventAction(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/admin')
   }
 
   const { error } = await supabase
@@ -122,7 +122,7 @@ export async function deleteEventAction(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/admin')
   }
 
   const { error } = await supabase

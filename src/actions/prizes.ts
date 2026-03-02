@@ -9,7 +9,7 @@ export async function createPrizeAction(eventId: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/admin')
   }
 
   const { error } = await supabase
@@ -36,7 +36,7 @@ export async function updatePrizeAction(prizeId: string, eventId: string, formDa
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/admin')
   }
 
   const { error } = await supabase
@@ -63,13 +63,35 @@ export async function deletePrizeAction(prizeId: string, eventId: string) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/admin')
   }
 
   const { error } = await supabase
     .from('event_prizes')
     .delete()
     .eq('id', prizeId)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath(`/events/${eventId}/prizes`)
+}
+
+export async function updateRaffleConditionsAction(eventId: string, formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/admin')
+  }
+
+  const raffle_conditions = (formData.get('raffle_conditions') as string)?.trim() || null
+
+  const { error } = await supabase
+    .from('events')
+    .update({ raffle_conditions })
+    .eq('id', eventId)
 
   if (error) {
     return { error: error.message }

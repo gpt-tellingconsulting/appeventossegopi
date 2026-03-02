@@ -40,7 +40,7 @@ export async function signout() {
   const supabase = await createClient()
   await supabase.auth.signOut()
   revalidatePath('/', 'layout')
-  redirect('/login')
+  redirect('/admin')
 }
 
 export async function resetPassword(formData: FormData) {

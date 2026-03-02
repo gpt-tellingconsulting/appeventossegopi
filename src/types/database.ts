@@ -64,6 +64,9 @@ export interface Event {
   latitude: number | null
   longitude: number | null
 
+  // Sorteos
+  raffle_conditions: string | null
+
   // Contenido JSONB
   benefits: EventBenefit[]
   speakers: Speaker[]
@@ -330,6 +333,7 @@ export interface CreateEventDTO {
   video_url?: string
   latitude?: number
   longitude?: number
+  raffle_conditions?: string
   benefits?: EventBenefit[]
   speakers?: Speaker[]
   gallery_images?: GalleryImage[]

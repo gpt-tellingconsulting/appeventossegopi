@@ -21,7 +21,7 @@ export default function SignupPage() {
 
       <p className="text-center text-sm text-foreground-secondary">
         ¿Ya tienes una cuenta?{' '}
-        <Link href="/login" className="font-medium text-accent-500 hover:text-accent-600 hover:underline">
+        <Link href="/admin" className="font-medium text-accent-500 hover:text-accent-600 hover:underline">
           Inicia sesión
         </Link>
       </p>
