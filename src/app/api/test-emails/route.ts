@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   // Fetch real event data (use provided eventId or get the first published event)
   let eventQuery = supabase
     .from('events')
-    .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city')
+    .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city, raffle_conditions')
 
   if (eventId) {
     eventQuery = eventQuery.eq('id', eventId)
@@ -35,10 +35,11 @@ export async function POST(request: NextRequest) {
     eventQuery = eventQuery.eq('status', 'published').limit(1)
   }
 
-  const { data: eventData } = await eventQuery.single()
+  const { data: eventData, error: eventError } = await eventQuery.single()
 
-  if (!eventData) {
-    return NextResponse.json({ error: 'No se encontro un evento publicado' }, { status: 404 })
+  if (eventError || !eventData) {
+    console.error('Test emails event query error:', eventError)
+    return NextResponse.json({ error: 'No se encontro un evento publicado', details: eventError?.message }, { status: 404 })
   }
 
   const eventDate = new Date(eventData.event_date).toLocaleDateString('es-ES', {
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
         venueAddress: eventData.venue_address,
         city: eventData.city,
         qrCodeDataUrl: 'cid:qr-code',
+        raffleConditions: eventData.raffle_conditions,
       })
 
       await sendEmail({

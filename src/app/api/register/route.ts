@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
     // Obtener detalles completos del evento para el email de confirmacion
     const { data: eventDetails } = await supabase
       .from('events')
-      .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city')
+      .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city, raffle_conditions')
       .eq('id', data.eventId)
       .single()
 
@@ -229,6 +229,7 @@ export async function POST(request: NextRequest) {
           venueAddress: eventDetails.venue_address ?? '',
           city: eventDetails.city ?? '',
           qrCodeDataUrl: 'cid:qr-code',
+          raffleConditions: eventDetails.raffle_conditions,
         })
 
         await sendEmail({
