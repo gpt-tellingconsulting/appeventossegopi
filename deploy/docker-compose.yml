@@ -37,7 +37,7 @@ services:
     networks:
       - eventos_internal
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - eventos_db_data:/var/lib/postgresql/data:Z
     environment:
