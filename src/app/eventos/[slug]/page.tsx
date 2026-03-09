@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getEventBySlug } from '@/features/events/services/eventService'
+import { getEventBySlug, getUpcomingEvents } from '@/features/events/services/eventService'
 import { CountdownTimer } from '@/features/events/components/CountdownTimer'
 import { BenefitsSection } from '@/features/events/components/BenefitsSection'
 import { SpeakersSection } from '@/features/events/components/SpeakersSection'
@@ -9,6 +9,7 @@ import { GallerySection } from '@/features/events/components/GallerySection'
 import { MapEmbed } from '@/features/events/components/MapEmbed'
 import { PrizesSection } from '@/features/events/components/PrizesSection'
 import { VideoSection } from '@/features/events/components/VideoSection'
+import { UpcomingEventsSection } from '@/features/events/components/UpcomingEventsSection'
 import { getActivePrizesByEvent } from '@/features/raffles/services/prizeService'
 import { siteConfig } from '@/config/siteConfig'
 
@@ -56,7 +57,10 @@ export default async function EventLandingPage({ params }: PageProps) {
   const isRegistrationOpen = event.status === 'published' &&
     (!event.registration_deadline || new Date(event.registration_deadline) > new Date())
 
-  const prizes = await getActivePrizesByEvent(event.id)
+  const [prizes, upcomingEvents] = await Promise.all([
+    getActivePrizesByEvent(event.id),
+    getUpcomingEvents(),
+  ])
 
   return (
     <div className="min-h-screen">
@@ -197,6 +201,9 @@ export default async function EventLandingPage({ params }: PageProps) {
           </div>
         </section>
       )}
+
+      {/* Proximos Eventos */}
+      <UpcomingEventsSection events={upcomingEvents} currentSlug={event.slug} />
 
       {/* Footer minimal */}
       <footer className="bg-primary-900 text-white/60 py-8">

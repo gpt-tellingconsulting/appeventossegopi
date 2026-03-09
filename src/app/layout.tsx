@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { siteConfig } from '@/config/siteConfig'
+import { SectionNavigator } from '@/features/events/components/SectionNavigator'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -21,7 +22,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        {children}
+        <SectionNavigator />
+      </body>
     </html>
   )
 }

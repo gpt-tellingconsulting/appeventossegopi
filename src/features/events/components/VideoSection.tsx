@@ -23,7 +23,7 @@ export function VideoSection({ videoUrl }: VideoSectionProps) {
         <div className="rounded-2xl overflow-hidden shadow-lg bg-black aspect-video">
           {youtubeId ? (
             <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}`}
+              src={`https://www.youtube.com/embed/${youtubeId}?loop=1&playlist=${youtubeId}`}
               className="w-full h-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
