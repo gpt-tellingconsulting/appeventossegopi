@@ -36,6 +36,8 @@ services:
     image: supabase/postgres:15.8.1.085
     networks:
       - eventos_internal
+    ports:
+      - "5432:5432"
     volumes:
       - eventos_db_data:/var/lib/postgresql/data:Z
     environment:
