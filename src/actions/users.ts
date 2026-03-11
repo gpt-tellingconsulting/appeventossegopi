@@ -37,6 +37,7 @@ export async function createUserAction(formData: FormData) {
       user_type,
       company_access,
       is_active: true,
+      admin_set_password: password,
     })
     .eq('id', authData.user.id)
 
@@ -54,19 +55,38 @@ export async function updateUserAction(id: string, formData: FormData) {
   const first_name = (formData.get('first_name') as string).trim()
   const last_name = (formData.get('last_name') as string).trim()
   const user_type = formData.get('user_type') as string
+  const new_password = (formData.get('new_password') as string | null)?.trim() || ''
   const companyAccessRaw = formData.getAll('company_access')
   const company_access = companyAccessRaw.map(v => Number(v)).filter(v => !isNaN(v))
 
+  // If a new password was provided, update it via Admin API
+  if (new_password) {
+    if (new_password.length < 6) {
+      return { error: 'La contraseña debe tener al menos 6 caracteres' }
+    }
+    const serviceClient = createServiceClient()
+    const { error: pwError } = await serviceClient.auth.admin.updateUserById(id, {
+      password: new_password,
+    })
+    if (pwError) return { error: `Error al cambiar contraseña: ${pwError.message}` }
+  }
+
+  // Build profile update - include password if changed
+  const profileUpdate: Record<string, unknown> = {
+    first_name,
+    last_name,
+    full_name: `${first_name} ${last_name}`,
+    user_type,
+    company_access,
+    updated_at: new Date().toISOString(),
+  }
+  if (new_password) {
+    profileUpdate.admin_set_password = new_password
+  }
+
   const { error } = await supabase
     .from('profiles')
-    .update({
-      first_name,
-      last_name,
-      full_name: `${first_name} ${last_name}`,
-      user_type,
-      company_access,
-      updated_at: new Date().toISOString(),
-    })
+    .update(profileUpdate)
     .eq('id', id)
 
   if (error) return { error: error.message }

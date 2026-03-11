@@ -1,6 +1,9 @@
+import { requireAdmin } from '@/lib/auth-guard'
 import { CompanyForm } from '@/features/companies/components/CompanyForm'
 
-export default function NewCompanyPage() {
+export default async function NewCompanyPage() {
+  await requireAdmin()
+
   return (
     <div className="p-4 sm:p-8">
       <div className="mb-8">

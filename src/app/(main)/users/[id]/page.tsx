@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation'
+import { requireAdmin } from '@/lib/auth-guard'
 import { getUserById } from '@/features/users/services/userService'
 import { getAllCompanies } from '@/features/companies/services/companyService'
 import { UserForm } from '@/features/users/components/UserForm'
 
 export default async function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin()
   const { id } = await params
   const [user, companies] = await Promise.all([
     getUserById(id),
@@ -26,6 +28,7 @@ export default async function EditUserPage({ params }: { params: Promise<{ id: s
           user_type: user.user_type,
           company_access: user.company_access ?? [],
           is_active: user.is_active,
+          admin_set_password: user.admin_set_password ?? null,
         }}
         companies={companies.map(c => ({ company_code: c.company_code, name: c.name }))}
       />

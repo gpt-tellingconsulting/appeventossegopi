@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { requireAdmin } from '@/lib/auth-guard'
 import { getAllCompanies } from '@/features/companies/services/companyService'
 
 export default async function CompaniesPage() {
+  await requireAdmin()
   const companies = await getAllCompanies()
 
   return (

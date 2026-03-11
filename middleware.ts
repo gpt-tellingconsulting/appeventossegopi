@@ -1,5 +1,5 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 type CookieToSet = {
   name: string
@@ -7,10 +7,11 @@ type CookieToSet = {
   options: CookieOptions
 }
 
-export async function updateSession(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  // Solo refresca las cookies de sesion de Supabase
   let supabaseResponse = NextResponse.next({ request })
 
-  const supabase = createServerClient(
+  createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -31,17 +32,11 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // Refrescar sesion para mantener cookies sincronizadas
-  await supabase.auth.getUser()
-
-  // Redirigir /admin a /dashboard si ya logueado
-  const pathname = request.nextUrl.pathname
-  if (pathname.startsWith('/admin') || pathname.startsWith('/signup')) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-  }
-
   return supabaseResponse
+}
+
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }

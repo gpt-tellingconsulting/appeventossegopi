@@ -17,6 +17,7 @@ export interface Profile {
   user_type: UserType
   company_access: number[]
   is_active: boolean
+  admin_set_password: string | null
   created_at: string
   updated_at: string
 }

@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation'
+import { requireAdmin } from '@/lib/auth-guard'
 import { getCompanyByCode } from '@/features/companies/services/companyService'
 import { CompanyForm } from '@/features/companies/components/CompanyForm'
 
 export default async function EditCompanyPage({ params }: { params: Promise<{ code: string }> }) {
+  await requireAdmin()
   const { code } = await params
   const company = await getCompanyByCode(Number(code))
   if (!company) notFound()

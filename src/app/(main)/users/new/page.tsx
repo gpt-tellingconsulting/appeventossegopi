@@ -1,7 +1,9 @@
+import { requireAdmin } from '@/lib/auth-guard'
 import { getAllCompanies } from '@/features/companies/services/companyService'
 import { UserForm } from '@/features/users/components/UserForm'
 
 export default async function NewUserPage() {
+  await requireAdmin()
   const companies = await getAllCompanies()
 
   return (

@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import { requireAdmin } from '@/lib/auth-guard'
 import { getAllUsers } from '@/features/users/services/userService'
 import { getAllCompanies } from '@/features/companies/services/companyService'
 
 export default async function UsersPage() {
+  await requireAdmin()
   const [users, companies] = await Promise.all([
     getAllUsers(),
     getAllCompanies(),
