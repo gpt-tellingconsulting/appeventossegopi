@@ -105,6 +105,8 @@ export interface Registration {
   phone_country_code: string
   company: string | null
   position: string | null
+  company_cif: string | null
+  invitation_number: string | null
 
   // Asistencia
   attendance_status: AttendanceStatus

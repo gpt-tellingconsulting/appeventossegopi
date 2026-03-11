@@ -34,6 +34,8 @@ export function RegistrationForm({ event }: RegistrationFormProps) {
       phoneCountryCode: formData.get('phoneCountryCode') as string,
       company: formData.get('company') as string,
       position: (formData.get('position') as string) || undefined,
+      companyCif: (formData.get('companyCif') as string) || undefined,
+      invitationNumber: (formData.get('invitationNumber') as string) || undefined,
       eventId: event.id,
       privacyAccepted: formData.get('privacyAccepted') === 'on',
       commercialAccepted: formData.get('commercialAccepted') === 'on',
@@ -170,6 +172,35 @@ export function RegistrationForm({ event }: RegistrationFormProps) {
             type="text"
             className="w-full px-4 py-3 rounded-xl border border-border bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
             placeholder="Director Comercial"
+          />
+        </div>
+      </div>
+
+      {/* CIF Empresa y Numero de Invitacion */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="companyCif" className="block text-sm font-medium mb-1.5">
+            CIF Empresa <span className="text-foreground-muted font-normal">(opcional)</span>
+          </label>
+          <input
+            id="companyCif"
+            name="companyCif"
+            type="text"
+            className="w-full px-4 py-3 rounded-xl border border-border bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+            placeholder="B12345678"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="invitationNumber" className="block text-sm font-medium mb-1.5">
+            N.º de Invitación <span className="text-foreground-muted font-normal">(opcional)</span>
+          </label>
+          <input
+            id="invitationNumber"
+            name="invitationNumber"
+            type="text"
+            className="w-full px-4 py-3 rounded-xl border border-border bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+            placeholder="INV-001"
           />
         </div>
       </div>

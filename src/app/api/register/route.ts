@@ -142,6 +142,8 @@ export async function POST(request: NextRequest) {
         phone_country_code: data.phoneCountryCode,
         company: data.company ?? null,
         position: data.position ?? null,
+        company_cif: data.companyCif ?? null,
+        invitation_number: data.invitationNumber ?? null,
         registration_ip: ip,
         user_agent: userAgent,
         tags: [],

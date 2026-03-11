@@ -8,6 +8,8 @@ export const registrationSchema = z.object({
   phoneCountryCode: z.string().regex(/^\+\d{1,3}$/, 'Prefijo inválido'),
   company: z.string().min(1, 'La empresa es obligatoria'),
   position: z.string().optional(),
+  companyCif: z.string().optional(),
+  invitationNumber: z.string().optional(),
   eventId: z.string().uuid('Evento inválido'),
   privacyAccepted: z.literal(true, {
     message: 'Debe aceptar la Política de Privacidad para registrarse',
