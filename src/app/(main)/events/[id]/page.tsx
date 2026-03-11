@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getEventById } from '@/features/events/services/eventService'
 import { EventForm } from '@/features/events/components/EventForm'
+import { getAllCompanies } from '@/features/companies/services/companyService'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -9,7 +10,10 @@ interface PageProps {
 
 export default async function EditEventPage({ params }: PageProps) {
   const { id } = await params
-  const event = await getEventById(id)
+  const [event, companies] = await Promise.all([
+    getEventById(id),
+    getAllCompanies(),
+  ])
 
   if (!event) {
     notFound()
@@ -53,7 +57,7 @@ export default async function EditEventPage({ params }: PageProps) {
         </div>
       </div>
 
-      <EventForm event={event} />
+      <EventForm event={event} companies={companies.map(c => ({ company_code: c.company_code, name: c.name }))} />
     </div>
   )
 }

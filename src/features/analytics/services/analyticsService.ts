@@ -1,5 +1,31 @@
 import { createClient } from '@/lib/supabase/server'
-import type { Event, Registration } from '@/types/database'
+import type { Event, Registration, Profile } from '@/types/database'
+
+async function getCurrentProfile(): Promise<Profile | null> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+  return (data as Profile) ?? null
+}
+
+async function getAccessibleEventIds(): Promise<string[] | null> {
+  const profile = await getCurrentProfile()
+  if (!profile || profile.user_type === 'admin') return null // null = no filter
+
+  if (!profile.company_access?.length) return [] // empty = no access
+
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('events')
+    .select('id')
+    .in('company_code', profile.company_access)
+  return (data ?? []).map(e => e.id)
+}
 
 export interface GlobalStats {
   totalRegistrations: number
@@ -29,17 +55,25 @@ export interface EventStats {
 
 export async function getGlobalStats(): Promise<GlobalStats> {
   const supabase = await createClient()
+  const eventIds = await getAccessibleEventIds()
+
+  let regQuery = supabase.from('registrations').select('attendance_status, nps_score', { count: 'exact' })
+  let eventsQuery = supabase.from('events').select('id', { count: 'exact' })
+  let metricsQuery = supabase.from('event_metrics').select('emails_sent, emails_opened')
+
+  if (eventIds !== null) {
+    if (eventIds.length === 0) {
+      return { totalRegistrations: 0, totalEvents: 0, attendanceRate: 0, emailOpenRate: 0, avgNps: null }
+    }
+    regQuery = regQuery.in('event_id', eventIds)
+    eventsQuery = eventsQuery.in('id', eventIds)
+    metricsQuery = metricsQuery.in('event_id', eventIds)
+  }
 
   const [registrationsResult, eventsResult, metricsResult] = await Promise.all([
-    supabase
-      .from('registrations')
-      .select('attendance_status, nps_score', { count: 'exact' }),
-    supabase
-      .from('events')
-      .select('id', { count: 'exact' }),
-    supabase
-      .from('event_metrics')
-      .select('emails_sent, emails_opened'),
+    regQuery,
+    eventsQuery,
+    metricsQuery,
   ])
 
   const registrations = registrationsResult.data ?? []
@@ -133,11 +167,17 @@ export interface EventSummary {
 
 export async function getAllEventsSummary(): Promise<EventSummary[]> {
   const supabase = await createClient()
+  const profile = await getCurrentProfile()
 
-  const { data: events, error } = await supabase
-    .from('events')
-    .select('*')
-    .order('event_date', { ascending: false })
+  let query = supabase.from('events').select('*').order('event_date', { ascending: false })
+
+  if (profile && profile.user_type !== 'admin' && profile.company_access?.length > 0) {
+    query = query.in('company_code', profile.company_access)
+  } else if (profile && profile.user_type !== 'admin') {
+    return []
+  }
+
+  const { data: events, error } = await query
 
   if (error) throw error
 

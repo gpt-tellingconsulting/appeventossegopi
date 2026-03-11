@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { getAllEvents } from '@/features/events/services/eventService'
+import { getAccessibleEvents } from '@/features/events/services/eventService'
 import { EventStatusBadge } from '@/features/events/components/EventStatusBadge'
 
 export default async function EventsPage() {
-  const events = await getAllEvents()
+  const events = await getAccessibleEvents()
 
   return (
     <div className="p-4 sm:p-8">

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getAllRegistrations } from '@/features/registrations/services/registrationService'
-import { getAllEvents } from '@/features/events/services/eventService'
+import { getAccessibleEvents } from '@/features/events/services/eventService'
 import { EventFilterSelect } from '@/features/registrations/components/EventFilterSelect'
 
 interface PageProps {
@@ -40,7 +40,7 @@ export default async function RegistrationsPage({ searchParams }: PageProps) {
       page: Number(page),
       pageSize: 30,
     }),
-    getAllEvents(),
+    getAccessibleEvents(),
   ])
 
   const { data: registrations, total, totalPages, page: currentPage } = registrationsResult

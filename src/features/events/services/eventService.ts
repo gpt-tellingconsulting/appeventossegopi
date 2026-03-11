@@ -1,5 +1,47 @@
 import { createClient } from '@/lib/supabase/server'
-import type { Event, CreateEventDTO, UpdateEventDTO, EventStatus } from '@/types/database'
+import type { Event, CreateEventDTO, UpdateEventDTO, EventStatus, Profile } from '@/types/database'
+
+/**
+ * Returns the current authenticated user's profile.
+ * Used to filter data by company_access in admin pages.
+ */
+async function getCurrentProfile(): Promise<Profile | null> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+  return (data as Profile) ?? null
+}
+
+/**
+ * Returns events accessible to the current user.
+ * Admin: all events. User: only events matching their company_access.
+ * Use this in admin pages instead of getAllEvents().
+ */
+export async function getAccessibleEvents(status?: EventStatus): Promise<Event[]> {
+  const supabase = await createClient()
+  const profile = await getCurrentProfile()
+
+  let query = supabase.from('events').select('*').order('event_date', { ascending: false })
+
+  if (status) {
+    query = query.eq('status', status)
+  }
+
+  if (profile && profile.user_type !== 'admin' && profile.company_access?.length > 0) {
+    query = query.in('company_code', profile.company_access)
+  } else if (profile && profile.user_type !== 'admin') {
+    return []
+  }
+
+  const { data, error } = await query
+  if (error) throw error
+  return (data ?? []) as Event[]
+}
 
 export async function getPublishedEvents(): Promise<Event[]> {
   const supabase = await createClient()

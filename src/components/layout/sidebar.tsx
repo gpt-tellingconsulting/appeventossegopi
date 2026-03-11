@@ -24,6 +24,11 @@ const navItems: NavItem[] = [
   { href: '/analytics', label: 'Analytics', icon: ChartBarIcon },
 ]
 
+const adminNavItems: NavItem[] = [
+  { href: '/companies', label: 'Empresas', icon: BuildingIcon },
+  { href: '/users', label: 'Usuarios', icon: UserCogIcon },
+]
+
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -130,6 +135,29 @@ export function Sidebar() {
                   </Link>
                 )
               })}
+              {profile?.user_type === 'admin' && (
+                <>
+                  <p className="text-[10px] uppercase tracking-wider text-white/40 px-4 mb-3 mt-6">
+                    Administracion
+                  </p>
+                  {adminNavItems.map((item) => {
+                    const isActive =
+                      pathname === item.href ||
+                      pathname.startsWith(item.href)
+                    const Icon = item.icon
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`nav-item${isActive ? ' active' : ''}`}
+                      >
+                        <Icon className="w-5 h-5 flex-shrink-0" />
+                        <span>{item.label}</span>
+                      </Link>
+                    )
+                  })}
+                </>
+              )}
             </>
           )}
         </nav>
@@ -242,6 +270,24 @@ function LogoutIcon({ className }: { className?: string }) {
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round"
         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    </svg>
+  )
+}
+
+function BuildingIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    </svg>
+  )
+}
+
+function UserCogIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
   )
 }

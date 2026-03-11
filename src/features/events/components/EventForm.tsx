@@ -5,11 +5,17 @@ import { createEventAction, updateEventAction } from '@/actions/events'
 import { VideoFormSection } from './VideoFormSection'
 import type { Event } from '@/types/database'
 
-interface EventFormProps {
-  event?: Event
+interface CompanyOption {
+  company_code: number
+  name: string
 }
 
-export function EventForm({ event }: EventFormProps) {
+interface EventFormProps {
+  event?: Event
+  companies?: CompanyOption[]
+}
+
+export function EventForm({ event, companies = [] }: EventFormProps) {
   const isEditing = !!event
 
   const action = isEditing
@@ -110,6 +116,20 @@ export function EventForm({ event }: EventFormProps) {
             <label htmlFor="max_capacity" className="block text-sm font-medium mb-2">Capacidad maxima</label>
             <input id="max_capacity" name="max_capacity" type="number" defaultValue={event?.max_capacity ?? ''} className={inputClass} placeholder="500" />
           </div>
+
+          {companies.length > 0 && (
+            <div>
+              <label htmlFor="company_code" className="block text-sm font-medium mb-2">Empresa *</label>
+              <select id="company_code" name="company_code" required defaultValue={event?.company_code ?? ''} className={inputClass}>
+                <option value="">Seleccionar empresa...</option>
+                {companies.map((c) => (
+                  <option key={c.company_code} value={c.company_code}>
+                    {c.company_code} - {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="md:col-span-2">
             <label htmlFor="description" className="block text-sm font-medium mb-2">Descripcion *</label>

@@ -43,6 +43,7 @@ export async function createEventAction(formData: FormData) {
     venue_image_url: (formData.get('venue_image_url') as string) || undefined,
     video_url: (formData.get('video_url') as string) || undefined,
     max_capacity: formData.get('max_capacity') ? Number(formData.get('max_capacity')) : undefined,
+    company_code: formData.get('company_code') ? Number(formData.get('company_code')) : undefined,
   }
 
   const { error } = await supabase
@@ -82,6 +83,7 @@ export async function updateEventAction(id: string, formData: FormData) {
     venue_image_url: (formData.get('venue_image_url') as string) || undefined,
     video_url: (formData.get('video_url') as string) || undefined,
     max_capacity: formData.get('max_capacity') ? Number(formData.get('max_capacity')) : undefined,
+    company_code: formData.get('company_code') ? Number(formData.get('company_code')) : undefined,
     status: (formData.get('status') as UpdateEventDTO['status']) || undefined,
   }
 

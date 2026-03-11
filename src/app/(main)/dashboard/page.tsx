@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { getAllEvents } from '@/features/events/services/eventService'
+import { getAccessibleEvents } from '@/features/events/services/eventService'
 
 export default async function DashboardPage() {
-  const events = await getAllEvents()
+  const events = await getAccessibleEvents()
   const publishedCount = events.filter(e => e.status === 'published').length
   const draftCount = events.filter(e => e.status === 'draft').length
   const completedCount = events.filter(e => e.status === 'completed').length

@@ -4,12 +4,35 @@
 
 export type UserRole = 'admin' | 'organizer' | 'viewer'
 
+export type UserType = 'admin' | 'user'
+
 export interface Profile {
   id: string
   email: string
   full_name: string | null
   avatar_url: string | null
   role: UserRole
+  first_name: string | null
+  last_name: string | null
+  user_type: UserType
+  company_access: number[]
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+// ============================================
+// Empresas
+// ============================================
+
+export interface Company {
+  company_code: number
+  name: string
+  cif: string
+  fiscal_address: string | null
+  physical_address: string | null
+  email: string | null
+  is_active: boolean
   created_at: string
   updated_at: string
 }
@@ -79,6 +102,12 @@ export interface Event {
 
   // Organizador
   created_by: string | null
+
+  // Empresa
+  company_code: number | null
+
+  // Relacion
+  company?: Company
 
   created_at: string
   updated_at: string
@@ -341,6 +370,7 @@ export interface CreateEventDTO {
   gallery_images?: GalleryImage[]
   max_capacity?: number
   registration_deadline?: string
+  company_code?: number
 }
 
 export interface UpdateEventDTO extends Partial<CreateEventDTO> {
@@ -373,9 +403,62 @@ export interface CreateRaffleDTO {
 }
 
 // ============================================
-// Permisos por Rol
+// DTOs de Empresa
 // ============================================
 
+export interface CreateCompanyDTO {
+  company_code: number
+  name: string
+  cif: string
+  fiscal_address?: string
+  physical_address?: string
+  email?: string
+}
+
+export interface UpdateCompanyDTO extends Partial<Omit<CreateCompanyDTO, 'company_code'>> {
+  is_active?: boolean
+}
+
+// ============================================
+// Permisos por Tipo de Usuario
+// ============================================
+
+export const USER_TYPE_PERMISSIONS = {
+  admin: {
+    canManageEvents: true,
+    canManageRegistrations: true,
+    canManageWorkflows: true,
+    canManageRaffles: true,
+    canViewAnalytics: true,
+    canExportData: true,
+    canManageUsers: true,
+    canManageCompanies: true,
+    canManageSettings: true,
+  },
+  user: {
+    canManageEvents: true,
+    canManageRegistrations: true,
+    canManageWorkflows: true,
+    canManageRaffles: true,
+    canViewAnalytics: true,
+    canExportData: true,
+    canManageUsers: false,
+    canManageCompanies: false,
+    canManageSettings: false,
+  },
+} as const
+
+export type Permission = keyof typeof USER_TYPE_PERMISSIONS.admin
+
+export function hasPermission(userType: UserType, permission: Permission): boolean {
+  return USER_TYPE_PERMISSIONS[userType][permission]
+}
+
+// ============================================
+// Permisos por Rol (DEPRECATED - usar USER_TYPE_PERMISSIONS)
+// ============================================
+
+/** @deprecated Usar USER_TYPE_PERMISSIONS y hasPermission con UserType */
 export const ROLE_PERMISSIONS = {
   admin: {
     canManageEvents: true,
@@ -409,12 +492,6 @@ export const ROLE_PERMISSIONS = {
   },
 } as const
 
-export type Permission = keyof typeof ROLE_PERMISSIONS.admin
-
-export function hasPermission(role: UserRole, permission: Permission): boolean {
-  return ROLE_PERMISSIONS[role][permission]
-}
-
 // ============================================
 // Database type para Supabase client
 // ============================================
@@ -427,9 +504,14 @@ export interface Database {
         Insert: Omit<Profile, 'created_at' | 'updated_at'>
         Update: Partial<Omit<Profile, 'id' | 'created_at'>>
       }
+      companies: {
+        Row: Company
+        Insert: CreateCompanyDTO
+        Update: UpdateCompanyDTO
+      }
       events: {
         Row: Event
-        Insert: CreateEventDTO & { created_by?: string }
+        Insert: CreateEventDTO & { created_by?: string; company_code?: number }
         Update: UpdateEventDTO
       }
       registrations: {
