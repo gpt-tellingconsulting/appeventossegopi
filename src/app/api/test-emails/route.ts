@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email'
+import type { SmtpConfig } from '@/lib/email'
 import { registrationConfirmationEmail, attendanceThankYouEmail } from '@/lib/email/templates'
 import { generateBrandedQR } from '@/lib/qr'
 
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
   // Fetch real event data (use provided eventId or get the first published event)
   let eventQuery = supabase
     .from('events')
-    .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city, raffle_conditions')
+    .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city, raffle_conditions, company_code')
 
   if (eventId) {
     eventQuery = eventQuery.eq('id', eventId)
@@ -51,6 +52,25 @@ export async function POST(request: NextRequest) {
   const startTime = eventData.event_start_time?.slice(0, 5) ?? ''
   const endTime = eventData.event_end_time?.slice(0, 5) ?? ''
   const eventTime = endTime ? `${startTime} - ${endTime}` : startTime
+
+  // Obtener config SMTP de la empresa del evento
+  let smtpConfig: SmtpConfig | undefined
+  if ((eventData as Record<string, unknown>).company_code) {
+    const { data: company } = await supabase
+      .from('companies')
+      .select('smtp_host, smtp_port, smtp_user, smtp_pass, smtp_from')
+      .eq('company_code', (eventData as Record<string, unknown>).company_code as number)
+      .single()
+    if (company?.smtp_host && company?.smtp_user && company?.smtp_pass) {
+      smtpConfig = {
+        host: company.smtp_host,
+        port: company.smtp_port ?? 465,
+        user: company.smtp_user,
+        pass: company.smtp_pass,
+        from: company.smtp_from ?? company.smtp_user,
+      }
+    }
+  }
 
   const results: Array<{ email: string; confirmation: string; thankYou: string }> = []
 
@@ -84,6 +104,7 @@ export async function POST(request: NextRequest) {
         to: email,
         subject: `[TEST] Confirmacion de Inscripcion - ${eventData.title}`,
         html: confirmationHtml,
+        smtpConfig,
         attachments: [{
           filename: 'qr-invitacion.png',
           content: qrBuffer,
@@ -110,6 +131,7 @@ export async function POST(request: NextRequest) {
         to: email,
         subject: `[TEST] Gracias por asistir - ${eventData.title}`,
         html: thankYouHtml,
+        smtpConfig,
       })
       result.thankYou = 'sent'
     } catch (err) {

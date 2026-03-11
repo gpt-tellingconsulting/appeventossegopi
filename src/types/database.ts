@@ -33,6 +33,11 @@ export interface Company {
   fiscal_address: string | null
   physical_address: string | null
   email: string | null
+  smtp_host: string | null
+  smtp_port: number | null
+  smtp_user: string | null
+  smtp_pass: string | null
+  smtp_from: string | null
   is_active: boolean
   created_at: string
   updated_at: string
@@ -414,6 +419,11 @@ export interface CreateCompanyDTO {
   fiscal_address?: string
   physical_address?: string
   email?: string
+  smtp_host?: string
+  smtp_port?: number
+  smtp_user?: string
+  smtp_pass?: string
+  smtp_from?: string
 }
 
 export interface UpdateCompanyDTO extends Partial<Omit<CreateCompanyDTO, 'company_code'>> {

@@ -4,6 +4,7 @@ import { registrationSchema } from '@/features/registrations/types/schemas'
 import crypto from 'crypto'
 import { generateBrandedQR } from '@/lib/qr'
 import { sendEmail } from '@/lib/email'
+import type { SmtpConfig } from '@/lib/email'
 import { registrationConfirmationEmail } from '@/lib/email/templates'
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
@@ -142,8 +143,8 @@ export async function POST(request: NextRequest) {
         phone_country_code: data.phoneCountryCode,
         company: data.company ?? null,
         position: data.position ?? null,
-        company_cif: data.companyCif ?? null,
-        invitation_number: data.invitationNumber ?? null,
+        registrant_cif: data.companyCif ?? null,
+        registrant_invitation: data.invitationNumber ?? null,
         registration_ip: ip,
         user_agent: userAgent,
         tags: [],
@@ -197,15 +198,34 @@ export async function POST(request: NextRequest) {
         .eq('id', registration.id)
     }
 
-    // Obtener detalles completos del evento para el email de confirmacion
+    // Obtener detalles completos del evento + config SMTP de la empresa
     const { data: eventDetails } = await supabase
       .from('events')
-      .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city, raffle_conditions')
+      .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city, raffle_conditions, company_code')
       .eq('id', data.eventId)
       .single()
 
     if (eventDetails) {
       try {
+        // Obtener config SMTP de la empresa del evento
+        let smtpConfig: SmtpConfig | undefined
+        if (eventDetails.company_code) {
+          const { data: company } = await supabase
+            .from('companies')
+            .select('smtp_host, smtp_port, smtp_user, smtp_pass, smtp_from')
+            .eq('company_code', eventDetails.company_code)
+            .single()
+          if (company?.smtp_host && company?.smtp_user && company?.smtp_pass) {
+            smtpConfig = {
+              host: company.smtp_host,
+              port: company.smtp_port ?? 465,
+              user: company.smtp_user,
+              pass: company.smtp_pass,
+              from: company.smtp_from ?? company.smtp_user,
+            }
+          }
+        }
+
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
         const checkinUrl = `${siteUrl}/api/checkin?token=${qrToken}`
         const qrBuffer = await generateBrandedQR(checkinUrl)
@@ -238,6 +258,7 @@ export async function POST(request: NextRequest) {
           to: registration.email,
           subject: `Confirmacion de Inscripcion - ${eventDetails.title}`,
           html: emailHtml,
+          smtpConfig,
           attachments: [{
             filename: 'qr-invitacion.png',
             content: qrBuffer,

@@ -16,6 +16,11 @@ export async function createCompanyAction(formData: FormData) {
     fiscal_address: (formData.get('fiscal_address') as string)?.trim() || null,
     physical_address: (formData.get('physical_address') as string)?.trim() || null,
     email: (formData.get('email') as string)?.trim() || null,
+    smtp_host: (formData.get('smtp_host') as string)?.trim() || null,
+    smtp_port: Number(formData.get('smtp_port')) || 465,
+    smtp_user: (formData.get('smtp_user') as string)?.trim() || null,
+    smtp_pass: (formData.get('smtp_pass') as string) || null,
+    smtp_from: (formData.get('smtp_from') as string)?.trim() || null,
   }
 
   const { error } = await supabase.from('companies').insert(dto)
@@ -36,6 +41,11 @@ export async function updateCompanyAction(code: number, formData: FormData) {
     fiscal_address: (formData.get('fiscal_address') as string)?.trim() || null,
     physical_address: (formData.get('physical_address') as string)?.trim() || null,
     email: (formData.get('email') as string)?.trim() || null,
+    smtp_host: (formData.get('smtp_host') as string)?.trim() || null,
+    smtp_port: Number(formData.get('smtp_port')) || 465,
+    smtp_user: (formData.get('smtp_user') as string)?.trim() || null,
+    smtp_pass: (formData.get('smtp_pass') as string) || null,
+    smtp_from: (formData.get('smtp_from') as string)?.trim() || null,
     updated_at: new Date().toISOString(),
   }
 

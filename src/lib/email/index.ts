@@ -1,4 +1,5 @@
 export { sendEmail, EMAIL_CONFIG } from './resend'
+export type { SmtpConfig } from './resend'
 export {
   registrationConfirmationEmail,
   preEventReminderEmail,
