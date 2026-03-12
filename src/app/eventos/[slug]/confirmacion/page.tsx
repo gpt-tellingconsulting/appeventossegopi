@@ -7,10 +7,12 @@ import { getActivePrizesByEvent } from '@/features/raffles/services/prizeService
 
 interface PageProps {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ n?: string; e?: string }>
 }
 
-export default async function ConfirmationPage({ params }: PageProps) {
+export default async function ConfirmationPage({ params, searchParams }: PageProps) {
   const { slug } = await params
+  const { n: fullName, e: email } = await searchParams
   const event = await getEventBySlug(slug)
   if (!event) notFound()
 
@@ -28,7 +30,10 @@ export default async function ConfirmationPage({ params }: PageProps) {
 
         <h1 className="text-display-sm mb-3">Inscripcion exitosa</h1>
         <p className="text-foreground-secondary mb-2">
-          Gracias por inscribirte. Hemos enviado un email de confirmacion a tu correo electronico.
+          {fullName && email
+            ? <>Estimado/a <strong>{fullName}</strong>, muchas gracias por inscribirte. Hemos enviado un email de confirmacion a tu correo <strong>{email}</strong>.</>
+            : <>Gracias por inscribirte. Hemos enviado un email de confirmacion a tu correo electronico.</>
+          }
         </p>
         <p className="text-foreground-muted text-sm mb-8">
           Por favor, revisa tu bandeja de entrada (y la carpeta de spam) y confirma tu email para completar el proceso.

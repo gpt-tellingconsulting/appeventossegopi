@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
     // Obtener detalles completos del evento + config SMTP de la empresa
     const { data: eventDetails } = await supabase
       .from('events')
-      .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city, raffle_conditions, company_code')
+      .select('title, event_date, event_start_time, event_end_time, venue_name, venue_address, city, raffle_conditions, company_code, venue_image_url')
       .eq('id', data.eventId)
       .single()
 
@@ -230,6 +230,22 @@ export async function POST(request: NextRequest) {
         const checkinUrl = `${siteUrl}/api/checkin?token=${qrToken}`
         const qrBuffer = await generateBrandedQR(checkinUrl)
 
+        // Descargar imagen de ubicación del evento si existe
+        let venueImageBuffer: Buffer | null = null
+        let venueImageType = 'image/jpeg'
+        if (eventDetails.venue_image_url) {
+          try {
+            const imgRes = await fetch(eventDetails.venue_image_url)
+            if (imgRes.ok) {
+              const contentType = imgRes.headers.get('content-type')
+              if (contentType) venueImageType = contentType
+              venueImageBuffer = Buffer.from(await imgRes.arrayBuffer())
+            }
+          } catch (imgErr) {
+            console.warn('Could not download venue image:', imgErr)
+          }
+        }
+
         const eventDate = new Date(eventDetails.event_date).toLocaleDateString('es-ES', {
           weekday: 'long',
           day: 'numeric',
@@ -251,19 +267,29 @@ export async function POST(request: NextRequest) {
           venueAddress: eventDetails.venue_address ?? '',
           city: eventDetails.city ?? '',
           qrCodeDataUrl: 'cid:qr-code',
+          venueImageCid: venueImageBuffer ? 'cid:venue-image' : undefined,
           raffleConditions: eventDetails.raffle_conditions,
         })
+
+        const attachments: Array<{ filename: string; content: Buffer; cid: string; contentType?: string }> = [
+          { filename: 'qr-invitacion.png', content: qrBuffer, cid: 'qr-code' },
+        ]
+        if (venueImageBuffer) {
+          const ext = venueImageType.includes('png') ? 'png' : 'jpg'
+          attachments.push({
+            filename: `ubicacion-evento.${ext}`,
+            content: venueImageBuffer,
+            cid: 'venue-image',
+            contentType: venueImageType,
+          })
+        }
 
         await sendEmail({
           to: registration.email,
           subject: `Confirmacion de Inscripcion - ${eventDetails.title}`,
           html: emailHtml,
           smtpConfig,
-          attachments: [{
-            filename: 'qr-invitacion.png',
-            content: qrBuffer,
-            cid: 'qr-code',
-          }],
+          attachments,
         })
       } catch (emailError) {
         console.error('Failed to send confirmation email:', emailError)

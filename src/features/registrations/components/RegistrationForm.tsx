@@ -66,7 +66,11 @@ export function RegistrationForm({ event }: RegistrationFormProps) {
         return
       }
 
-      router.push(`/eventos/${event.slug}/confirmacion`)
+      const confirmParams = new URLSearchParams({
+        n: data.firstName + ' ' + data.lastName,
+        e: data.email,
+      })
+      router.push(`/eventos/${event.slug}/confirmacion?${confirmParams.toString()}`)
     } catch {
       setServerError('Error de conexión. Inténtalo de nuevo.')
       setIsSubmitting(false)

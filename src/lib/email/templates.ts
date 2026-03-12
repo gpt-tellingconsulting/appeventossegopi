@@ -14,6 +14,7 @@ export interface EventEmailData {
   unsubscribeUrl?: string
   siteUrl?: string
   qrCodeDataUrl?: string
+  venueImageCid?: string
   raffleConditions?: string | null
 }
 
@@ -111,6 +112,20 @@ export function registrationConfirmationEmail(data: EventEmailData): string {
     </div>`
     : ''
 
+  const venueBlock = data.venueImageCid
+    ? `
+    <div style="text-align:center;margin:24px 0;padding:0;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+      <div style="background:linear-gradient(135deg,${PRIMARY} 0%,#B8006A 100%);padding:12px 16px;text-align:center;" bgcolor="${PRIMARY}">
+        <p style="color:#ffffff;font-weight:700;font-size:14px;margin:0;text-transform:uppercase;letter-spacing:0.5px;">&#128205; Ubicaci&oacute;n del Evento</p>
+      </div>
+      <img src="cid:venue-image" alt="Ubicacion: ${data.venueName}" width="536" style="display:block;width:100%;max-width:536px;height:auto;" />
+      <div style="padding:12px 16px;background:#f9fafb;">
+        <p style="color:#111827;font-weight:600;font-size:13px;margin:0 0 2px;">${data.venueName}</p>
+        <p style="color:#6b7280;font-size:12px;margin:0;">${data.venueAddress}, ${data.city}</p>
+      </div>
+    </div>`
+    : ''
+
   const body = `
     <p style="font-size:18px;color:#111827;margin-bottom:12px;font-weight:600;">Hola ${data.firstName} ${data.lastName},</p>
     <p style="color:#4b5563;line-height:1.65;margin-bottom:20px;font-size:15px;">
@@ -118,6 +133,7 @@ export function registrationConfirmationEmail(data: EventEmailData): string {
     </p>
     ${eventDetailsCard(data)}
     ${qrBlock}
+    ${venueBlock}
     <p style="color:#6b7280;line-height:1.65;margin-bottom:20px;font-size:13px;">
       Si tienes alguna pregunta, resp&oacute;ndenos a este correo.
     </p>
