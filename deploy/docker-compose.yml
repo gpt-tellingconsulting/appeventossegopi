@@ -25,7 +25,7 @@ volumes:
     driver: local
 
 configs:
-  eventos_kong_config_v2:
+  eventos_kong_config_v3:
     external: true
 
 services:
@@ -287,7 +287,7 @@ services:
       - eventos_internal
       - red_global
     configs:
-      - source: eventos_kong_config_v2
+      - source: eventos_kong_config_v3
         target: /var/lib/kong/kong.yml
     environment:
       KONG_DATABASE: "off"
