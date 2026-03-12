@@ -123,11 +123,13 @@ export default async function RegistrationsPage({ searchParams }: PageProps) {
             <p className="text-sm mt-1">No se encontraron inscripciones con los filtros actuales</p>
           </div>
         ) : (
-          <table className="w-full min-w-[500px]">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-background border-b border-border">
               <tr>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-foreground-secondary uppercase tracking-wider">Asistente</th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-foreground-secondary uppercase tracking-wider hidden md:table-cell">Evento</th>
+                <th className="text-left px-6 py-3 text-xs font-semibold text-foreground-secondary uppercase tracking-wider hidden sm:table-cell">Empresa</th>
+                <th className="text-left px-6 py-3 text-xs font-semibold text-foreground-secondary uppercase tracking-wider hidden lg:table-cell">CIF</th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-foreground-secondary uppercase tracking-wider">Estado</th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-foreground-secondary uppercase tracking-wider hidden lg:table-cell">Fecha</th>
                 <th className="text-right px-6 py-3 text-xs font-semibold text-foreground-secondary uppercase tracking-wider">Acciones</th>
@@ -151,6 +153,12 @@ export default async function RegistrationsPage({ searchParams }: PageProps) {
                     ) : (
                       <span className="text-sm text-foreground-secondary">-</span>
                     )}
+                  </td>
+                  <td className="px-6 py-4 hidden sm:table-cell">
+                    <p className="text-sm">{reg.company || '-'}</p>
+                  </td>
+                  <td className="px-6 py-4 hidden lg:table-cell">
+                    <p className="text-sm text-foreground-secondary">{reg.company_cif || '-'}</p>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGE[reg.attendance_status] ?? ''}`}>

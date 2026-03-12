@@ -71,8 +71,6 @@ export async function getAllRegistrations(
   let query = supabase
     .from('registrations')
     .select('*, event:events(id, title, event_date)', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(from, to)
 
   if (eventId) {
     query = query.eq('event_id', eventId)
@@ -92,9 +90,27 @@ export async function getAllRegistrations(
 
   if (error) throw error
 
+  // Sort by event title (A-Z), then company (A-Z), then attendee name (A-Z)
+  const sorted = (data ?? []).sort((a, b) => {
+    const eventA = (a as Record<string, unknown> & { event?: { title?: string } }).event?.title ?? ''
+    const eventB = (b as Record<string, unknown> & { event?: { title?: string } }).event?.title ?? ''
+    const eventCmp = eventA.localeCompare(eventB, 'es')
+    if (eventCmp !== 0) return eventCmp
+    const companyA = (a.company ?? '').toLowerCase()
+    const companyB = (b.company ?? '').toLowerCase()
+    const companyCmp = companyA.localeCompare(companyB, 'es')
+    if (companyCmp !== 0) return companyCmp
+    const nameA = `${a.first_name ?? ''} ${a.last_name ?? ''}`.trim()
+    const nameB = `${b.first_name ?? ''} ${b.last_name ?? ''}`.trim()
+    return nameA.localeCompare(nameB, 'es')
+  })
+
+  // Apply pagination in JS after sorting
   const total = count ?? 0
+  const paginated = sorted.slice(from, from + pageSize)
+
   return {
-    data: (data ?? []) as RegistrationWithConsents[],
+    data: paginated as RegistrationWithConsents[],
     total,
     page,
     pageSize,

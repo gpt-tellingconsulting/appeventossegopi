@@ -47,6 +47,7 @@ export interface RegistrationWithConsents {
   phone: string
   phone_country_code: string
   company: string | null
+  company_cif: string | null
   position: string | null
   attendance_status: string
   checked_in_at: string | null
