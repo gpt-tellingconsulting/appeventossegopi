@@ -35,7 +35,9 @@ services:
   eventos-db:
     image: supabase/postgres:15.8.1.085
     networks:
-      - eventos_internal
+      eventos_internal:
+        aliases:
+          - db
     ports:
       - "5433:5432"
     volumes:
