@@ -34,7 +34,7 @@ export function CTABanner() {
               No te pierdas el próximo evento
             </h2>
             <p className="text-body-lg text-white/85 max-w-xl">
-              Inscribete y forma parte de la comunidad de profesionales de la seguridad privada en Espana.
+              Inscribete y forma parte de la comunidad de profesionales de la pintura y la construcción en Espana.
             </p>
           </div>
 

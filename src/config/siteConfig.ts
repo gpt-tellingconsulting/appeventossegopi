@@ -68,7 +68,7 @@ export const siteConfig: SiteConfig = {
   platformName: 'Eventos SEGOPI',
   companyName: 'TELLING CONSULTING, S.L.',
   companyDescription:
-    'Plataforma oficial de eventos del Sector de la Seguridad Privada de España. Formacion, networking y conocimiento para profesionales del sector.',
+    'Plataforma oficial de eventos para Profesionales de la Pintura y la Construcción. Formacion, networking y conocimiento para profesionales del sector.',
   yearFounded: 2018,
 
   contact: {
@@ -104,10 +104,10 @@ export const siteConfig: SiteConfig = {
   },
 
   seo: {
-    siteTitle: 'Eventos SEGOPI | Seguridad Privada Espana',
+    siteTitle: 'Eventos SEGOPI | Profesionales de la Pintura y la Construcción',
     titleTemplate: '%s | Eventos SEGOPI',
     defaultDescription:
-      'Plataforma oficial de eventos del sector de la seguridad privada. Formacion, jornadas y congresos para profesionales del sector en Espana.',
+      'Plataforma oficial de eventos del sector de la pintura y la construcción. Formacion, jornadas y congresos para profesionales del sector en Espana.',
     locale: 'es_ES',
   },
 

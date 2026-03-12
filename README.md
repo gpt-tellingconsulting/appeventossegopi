@@ -1,6 +1,6 @@
 # AppEventosSegopi
 
-Plataforma de gestion de eventos para el sector de Seguridad Privada. Desarrollada para TELLING CONSULTING, S.L.
+Plataforma de gestion de eventos para Profesionales de la Pintura y la Construcción. Desarrollada para TELLING CONSULTING, S.L.
 
 ## Stack
 

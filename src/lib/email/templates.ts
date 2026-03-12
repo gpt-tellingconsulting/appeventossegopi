@@ -350,7 +350,7 @@ export function attendanceThankYouEmail(data: {
                 Ha sido un honor contar con su presencia en <strong>${data.eventTitle}</strong>,
                 celebrado el <strong>${data.eventDate}</strong> en <strong>${data.city}</strong>.
                 Su participaci&oacute;n contribuy&oacute; a hacer de este evento un espacio de encuentro
-                excepcional para el sector de la seguridad privada en Espa&ntilde;a.
+                excepcional para el sector de la pintura y la construcci&oacute;n en Espa&ntilde;a.
               </p>
 
               <!-- Highlight block -->
